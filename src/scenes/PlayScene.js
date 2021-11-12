@@ -1,12 +1,11 @@
-import Phaser from 'phaser';
+import BaseScene from './BaseScene'
 
 const PIPES_TO_RENDER = 4;
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
 
     constructor(config) {
-        super('PlayScene');
-       this.config = config;
+        super('PlayScene', config);
 
         this.bird = null;
         this.pipes = null;
@@ -21,19 +20,14 @@ class PlayScene extends Phaser.Scene {
         
     }
 
-    preload() {
-        this.load.image('sky', 'assets/sky.png')
-        this.load.image('bird', 'assets/bird.png')
-        this.load.image('pipe', 'assets/pipe.png')
-    }
-
     create() {
-        this.createBG();
+        super.create();
         this.handleInputs();
         this.createPipes();
         this.createBird(); 
         this.createColliders();
         this.createScore();
+        this.createPause();
 
     }
 
@@ -65,6 +59,18 @@ class PlayScene extends Phaser.Scene {
         const bestScore  = localStorage.getItem('bestScore');
         this.scoreText = this.add.text(16, 16, `Score: ${0}`, {fontSize: '32px', color: '#000'})
         this.bestScoreText = this.add.text(16, 48, `Top score: ${bestScore || 0}`, {fontSize: '18px', color: '#000'})
+    }
+
+    createPause() {
+       const pauseButton = this.add.image(this.config.width - 10, this.config.height - 10, 'pause')
+        .setOrigin(1)
+        .setScale(3)
+        .setInteractive();
+
+        pauseButton.on('pointerdown', () => {
+            this.physics.pause();
+            this.scene.pause();
+        })
     }
 
     createPipes() {
@@ -140,8 +146,8 @@ class PlayScene extends Phaser.Scene {
             const bestScoreText = localStorage.getItem('bestScore');
             const bestScore = bestScoreText && parseInt(bestScoreText, 10);
         
-            if (bestScore || this.score > bestScore) {
-                localStorage.setItem('bestScore',this.score);
+            if (!bestScore || this.score > bestScore) {
+                localStorage.setItem('bestScore', this.score);
             }
     }
 
