@@ -1,7 +1,9 @@
 
 
-import Phaser from 'phaser';
+import Phaser, { Scene } from 'phaser';
+import MainScene from './scenes/mainScene';
 import PlayScene from './scenes/PlayScene';
+import PreloadScene from './scenes/PreloadScene';
 
 const WIDTH = 800;
 const HEIGHT = 600;
@@ -12,6 +14,11 @@ const SHARED_CONFIG = {
   height: HEIGHT,
   startPosition: BIRD_POSITION
 }
+
+const Scenes = [PreloadScene, MainScene, PlayScene];
+const createScene = Scene => new Scene(SHARED_CONFIG);
+const initScenes = () => Scenes.map(createScene);
+
 
 const config = {
   //WebGL
@@ -25,7 +32,7 @@ const config = {
     },
     
   },
-    scene: [ new PlayScene(SHARED_CONFIG)],
+    scene: initScenes()
 }
 
 new Phaser.Game(config);
